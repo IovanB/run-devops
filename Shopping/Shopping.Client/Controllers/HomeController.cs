@@ -5,6 +5,7 @@ using Shopping.Client.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -12,18 +13,18 @@ namespace Shopping.Client.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly HttpClient _httpClient;
         private readonly ILogger<HomeController> _logger;
-        private readonly HttpClient httpClient;
 
-        public HomeController(ILogger<HomeController> logger, IHttpClientFactory httpClientFactory)
-        {
+        public HomeController(IHttpClientFactory httpClientFactory, ILogger<HomeController> logger)
+        {            
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            httpClient = httpClientFactory.CreateClient("ShoppingAPIClient");
+            _httpClient = httpClientFactory.CreateClient("ShoppingAPIClient");
         }
 
         public async Task<IActionResult> Index()
         {
-            var response = await httpClient.GetAsync("/Product");
+            var response = await _httpClient.GetAsync("/product");
             var content = await response.Content.ReadAsStringAsync();
             var productList = JsonConvert.DeserializeObject<IEnumerable<Product>>(content);
 
